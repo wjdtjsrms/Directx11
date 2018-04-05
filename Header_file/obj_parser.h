@@ -27,16 +27,16 @@ public:
 	 Obj_loader(const Obj_loader&);
 	~ Obj_loader();
 
-	bool Initialize(char *);
-	bool GetModel(char *);
-	bool ReadFile(char *);
-	bool LoadData(char *);
+	bool Initialize(const WCHAR*);
+	bool GetModel(const WCHAR*);
+	bool ReadFile(const WCHAR*);
+	bool LoadData(const WCHAR*);
 
 
 private:
-	bool GetModelFilename(char*);
-	bool ReadFileCounts(char*, int&, int&, int&, int&);
-	bool LoadDataStructures(char*,  int, int, int, int);
+	bool GetModelFilename(const WCHAR*);
+	bool ReadFileCounts(const WCHAR*, int&, int&, int&, int&);
+	bool LoadDataStructures(const WCHAR*,  int, int, int, int);
 
 
 

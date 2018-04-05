@@ -30,17 +30,17 @@ public:
 	FontClass(const FontClass&);
 	~FontClass();
 
-	bool Initialize(ID3D11Device*, char*, WCHAR*);
+	bool Initialize(ID3D11Device*, const WCHAR*, const WCHAR*);
 	void Shutdown();
 
 	ID3D11ShaderResourceView** GetTexture();
 	void BuildVertexArray(void*, char*, float, float);
 
 private:
-	bool LoadFontDate(char *);
+	bool LoadFontDate(const WCHAR*);
 	void ReleaseFontData();
 
-	bool LoadTexture(ID3D11Device*, WCHAR*);
+	bool LoadTexture(ID3D11Device*, const WCHAR*);
 	void ReleaseTexture();
 
 private:

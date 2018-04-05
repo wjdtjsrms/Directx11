@@ -77,19 +77,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Directx11.rc">
-      <Filter>리소스 파일</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="Directx11.ico">
-      <Filter>리소스 파일</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Header_file\Bitmapclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -153,5 +140,43 @@
     <ClInclude Include="Header_file\Timeclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Header_file\Directx11.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Header_file\Directx11.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Header_file\small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Resource\font.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Resource\sample_img.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Resource\uv_sanp2.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Resource\uv_snap.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resource\Font.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+    <Text Include="Resource\model.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resource\test.obj">
+      <Filter>리소스 파일</Filter>
+    </Object>
   </ItemGroup>
 </Project>

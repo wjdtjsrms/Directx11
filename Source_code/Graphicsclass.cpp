@@ -66,7 +66,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D->GetDevice(), "Resource/test.obj", "Resource/model.txt", L"Resource/uv_snap.dds", L"Resource/uv_sanp2.dds"); //change file
+	result = m_Model->Initialize(m_D3D->GetDevice(), L"Resource/test.obj", L"Resource/model.txt", L"Resource/uv_snap.dds", L"Resource/uv_sanp2.dds"); //change file
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);

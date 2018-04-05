@@ -72,7 +72,7 @@ bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 }
 
 
-bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -310,7 +310,7 @@ void LightShaderClass::ShutdownShader()
 }
 
 
-void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
+void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
 {
 	char* compileErrors;
 	unsigned long bufferSize, i;

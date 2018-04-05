@@ -30,7 +30,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -94,6 +94,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4005;4838</DisableSpecificWarnings>
+      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,7 +156,9 @@
     <ClCompile Include="Source_code\cameraclass.cpp" />
     <ClCompile Include="Source_code\Cpuclass.cpp" />
     <ClCompile Include="Source_code\D3dclass.cpp" />
-    <ClCompile Include="Source_code\Directx11.cpp" />
+    <ClCompile Include="Source_code\Directx11.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source_code\Fontclass.cpp" />
     <ClCompile Include="Source_code\Fontshaderclass.cpp" />
     <ClCompile Include="Source_code\Fpsclass.cpp" />
@@ -164,7 +167,7 @@
     <ClCompile Include="Source_code\Lightclass.cpp" />
     <ClCompile Include="Source_code\Lightshaderclass.cpp" />
     <ClCompile Include="Source_code\Main.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source_code\Modelclass.cpp" />
     <ClCompile Include="Source_code\obj_parser.cpp" />
@@ -173,13 +176,6 @@
     <ClCompile Include="Source_code\Textclass.cpp" />
     <ClCompile Include="Source_code\Textureclass.cpp" />
     <ClCompile Include="Source_code\Timeclass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Directx11.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Directx11.ico" />
-    <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header_file\Bitmapclass.h" />
@@ -203,6 +199,24 @@
     <ClInclude Include="Header_file\Textclass.h" />
     <ClInclude Include="Header_file\Textureclass.h" />
     <ClInclude Include="Header_file\Timeclass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Header_file\Directx11.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Header_file\Directx11.ico" />
+    <Image Include="Header_file\small.ico" />
+    <Image Include="Resource\font.dds" />
+    <Image Include="Resource\sample_img.dds" />
+    <Image Include="Resource\uv_sanp2.dds" />
+    <Image Include="Resource\uv_snap.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resource\Font.txt" />
+    <Text Include="Resource\model.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resource\test.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

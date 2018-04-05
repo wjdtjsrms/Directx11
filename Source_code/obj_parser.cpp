@@ -18,7 +18,7 @@ Obj_loader::~Obj_loader(){
 
 
 }
-bool Obj_loader::Initialize(char *Filename){
+bool Obj_loader::Initialize(const WCHAR* Filename){
 	bool result;
 
 	result = GetModel(Filename);
@@ -39,19 +39,19 @@ bool Obj_loader::Initialize(char *Filename){
 
 }
 
-bool Obj_loader::GetModel(char * Filename){
+bool Obj_loader::GetModel(const WCHAR* Filename){
 	return GetModelFilename(Filename);
 }
 
-bool Obj_loader::ReadFile(char *Filename){
+bool Obj_loader::ReadFile(const WCHAR* Filename){
 	return ReadFileCounts(Filename, vertexCount, textureCount, normalCount, faceCount);
 }
 
-bool Obj_loader::LoadData(char *Filename){
+bool Obj_loader::LoadData(const WCHAR* Filename){
 	return LoadDataStructures(Filename, vertexCount, textureCount, normalCount, faceCount);
 }
 
-bool Obj_loader::GetModelFilename(char* filename)
+bool Obj_loader::GetModelFilename(const WCHAR* filename)
 {
 	bool done;
 	ifstream fin;
@@ -83,7 +83,7 @@ bool Obj_loader::GetModelFilename(char* filename)
 }
 
 
-bool Obj_loader::ReadFileCounts(char* filename, int& vertexCount, int& textureCount, int& normalCount, int& faceCount)
+bool Obj_loader::ReadFileCounts(const WCHAR* filename, int& vertexCount, int& textureCount, int& normalCount, int& faceCount)
 {
 	ifstream fin;
 	char input;
@@ -141,7 +141,7 @@ bool Obj_loader::ReadFileCounts(char* filename, int& vertexCount, int& textureCo
 }
 
 
-bool Obj_loader::LoadDataStructures(char* filename, int vertexCount, int textureCount, int normalCount, int faceCount)
+bool Obj_loader::LoadDataStructures(const WCHAR* filename, int vertexCount, int textureCount, int normalCount, int faceCount)
 {
 	VertexType *vertices, *texcoords, *normals;
 	FaceType *faces;

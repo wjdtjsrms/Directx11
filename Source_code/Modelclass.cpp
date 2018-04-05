@@ -24,7 +24,7 @@ ModelClass::~ModelClass()
 }
 
 
-bool ModelClass::Initialize(ID3D11Device* device, char* objFileName, char* modelFilename, WCHAR* textureFilename1, WCHAR* textureFilename2)
+bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* objFileName, const WCHAR* modelFilename, const WCHAR* textureFilename1, const WCHAR* textureFilename2)
 {
 	bool result;
 
@@ -224,7 +224,7 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	return;
 }
 
-bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename1, WCHAR* filename2){
+bool ModelClass::LoadTexture(ID3D11Device* device, const WCHAR* filename1, const WCHAR* filename2){
 	bool result;
 
 	m_Texture = new TextureClass;
@@ -254,7 +254,7 @@ void ModelClass::ReleaseTexture()
 	return;
 }
 
-bool ModelClass::LoadModel(char* filename)
+bool ModelClass::LoadModel(const WCHAR* filename)
 {
 	ifstream fin;
 	char input;
@@ -321,7 +321,7 @@ void ModelClass::ReleaseModel()
 	return;
 }
 
-bool ModelClass::LoadParser(char* FileName){
+bool ModelClass::LoadParser(const WCHAR* FileName){
 
 	bool result;
 

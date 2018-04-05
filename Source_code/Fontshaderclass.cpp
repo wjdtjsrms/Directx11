@@ -73,7 +73,7 @@ bool Fontshaderclass::Render(ID3D11DeviceContext* deviceContext, int indexCount,
 }
 
 
-bool Fontshaderclass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool Fontshaderclass::InitializeShader(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -91,9 +91,9 @@ bool Fontshaderclass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	errorMessage = 0;
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer = 0;
-
+	
     // Compile the vertex shader code.
-	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "FontVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
+	result = D3DX11CompileFromFile((LPCWSTR)vsFilename, NULL, NULL, "FontVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 								   &vertexShaderBuffer, &errorMessage, NULL);
 
 	if(FAILED(result))
@@ -101,19 +101,21 @@ bool Fontshaderclass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 		// If the shader failed to compile it should have writen something to the error message.
 		if(errorMessage)
 		{
+			
 			OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
+			
 		}
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(hwnd, vsFilename, L"Missing Shader File", MB_OK);
+			MessageBox(hwnd, (LPCWSTR)vsFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
 	}
 
     // Compile the pixel shader code.
-	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "FontPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
+	result = D3DX11CompileFromFile((LPCWSTR)psFilename, NULL, NULL, "FontPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 								   &pixelShaderBuffer, &errorMessage, NULL);
 	if(FAILED(result))
 	{
@@ -125,7 +127,7 @@ bool Fontshaderclass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 		// If there was nothing in the error message then it simply could not find the file itself.
 		else
 		{
-			MessageBox(hwnd, psFilename, L"Missing Shader File", MB_OK);
+			MessageBox(hwnd, (LPCWSTR)psFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -281,7 +283,7 @@ void Fontshaderclass::ShutdownShader()
 }
 
 
-void Fontshaderclass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
+void Fontshaderclass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
 {
 	char* compileErrors;
 	unsigned long bufferSize, i;
@@ -311,8 +313,8 @@ void Fontshaderclass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hw
 	errorMessage = 0;
 
 	// Pop a message up on the screen to notify the user to check the text file for compile errors.
-	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.txt for message.", shaderFilename, MB_OK);
-
+	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.txt for message.", (LPCWSTR)shaderFilename, MB_OK);
+	
 	return;
 }
 

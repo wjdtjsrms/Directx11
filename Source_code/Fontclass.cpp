@@ -14,7 +14,7 @@ FontClass::~FontClass(){
 }
 
 
-bool FontClass::Initialize(ID3D11Device* device, char* fontFilename, WCHAR* textureFilename){
+bool FontClass::Initialize(ID3D11Device* device, const WCHAR* fontFilename, const WCHAR* textureFilename){
 	bool result;
 
 	result = LoadFontDate(fontFilename);
@@ -35,7 +35,7 @@ void FontClass::Shutdown(){
 	return;
 }
 
-bool FontClass::LoadFontDate(char * filename){
+bool FontClass::LoadFontDate(const WCHAR* filename){
 	ifstream fin;
 	char temp;
 
@@ -76,7 +76,7 @@ void FontClass::ReleaseFontData(){
 	return;
 }
 
-bool FontClass::LoadTexture(ID3D11Device* device, WCHAR* filename){
+bool FontClass::LoadTexture(ID3D11Device* device, const WCHAR* filename){
 	bool result;
 
 	m_Texture = new TextureClass;
