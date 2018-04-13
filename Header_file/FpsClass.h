@@ -3,8 +3,9 @@
 
 #pragma comment (lib,"winmm.lib")
 
-#include <Windows.h>
 #include <mmstream.h>
+#include <Windows.h>
+
 
 class FpsClass{
 public :

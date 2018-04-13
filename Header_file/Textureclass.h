@@ -1,8 +1,13 @@
 #ifndef _TEXTURECLASS_H_
 #define _TEXTURECLASS_H_
 
-#include <D3D11.h>
-#include <D3DX11tex.h>
+
+#include "pch.h"
+
+
+using namespace DirectX;
+using namespace Microsoft::WRL;
+
 
 class TextureClass
 {

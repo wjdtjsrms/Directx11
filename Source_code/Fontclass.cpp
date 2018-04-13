@@ -1,5 +1,7 @@
-#include "../Header_file/Fontclass.h"
 
+#include "stdafx.h"
+#include "../Header_file/Fontclass.h"
+#include "../source_code/stdafx.h"
 FontClass::FontClass(){
 	m_Font = 0;
 	m_Texture = 0;

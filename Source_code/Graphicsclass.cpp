@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: graphicsclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
+#include "stdafx.h"
 #include "../Header_file/graphicsclass.h"
 
 
@@ -66,7 +67,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D->GetDevice(), L"Resource/test.obj", L"Resource/model.txt", L"Resource/uv_snap.dds", L"Resource/uv_sanp2.dds"); //change file
+	result = m_Model->Initialize(m_D3D->GetDevice(), L"Resource/test.obj", L"Resource/model.txt", L"Resource/uv_snap.dds", L"Resource/uv_snap2.dds"); //change file
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -211,7 +212,7 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 	XMVECTOR Direction, DiffuseColor, AmbeintColor, SpecularColor, CameraPostion;
 	float SpecularPower;
 	
-	XMMATRIX Rotation;
+//	XMMATRIX Rotation;
 	
 	bool result;
 

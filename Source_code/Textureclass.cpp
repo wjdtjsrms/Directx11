@@ -1,3 +1,5 @@
+
+#include "stdafx.h"
 #include "../Header_file/Textureclass.h"
 
 TextureClass::TextureClass()
@@ -19,14 +21,15 @@ TextureClass::~TextureClass()
 bool TextureClass::Initialize(ID3D11Device* device, const WCHAR* filename1, const WCHAR* filename2){
 
 	HRESULT result;
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename1, NULL, NULL, &m_texture[0], NULL);
+	result = CreateDDSTextureFromFile(device, filename1, NULL, &m_texture[0], NULL, NULL);
 
+	
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename2, NULL, NULL, &m_texture[1], NULL);
+	result = CreateDDSTextureFromFile(device, filename2, NULL, &m_texture[1], NULL, NULL);
 
 	if (FAILED(result))
 	{
@@ -41,7 +44,7 @@ bool TextureClass::Initialize(ID3D11Device* device, const WCHAR* filename1, cons
 bool TextureClass::Initialize(ID3D11Device* device, const WCHAR* filename){
 
 	HRESULT result;
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL, &m_texture[0], NULL);
+	result = CreateDDSTextureFromFile(device, filename, NULL, &m_texture[0], NULL, NULL);
 
 	if (FAILED(result))
 	{

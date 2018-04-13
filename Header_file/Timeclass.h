@@ -1,7 +1,7 @@
 #ifndef _TIMECLASS_H_
 #define _TIMECLASS_H_
 
-#include <Windows.h>
+#include "pch.h"
 
 class TimerClass{
 public:

@@ -1,6 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: bitmapclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
+
+
+#include "stdafx.h"
+
 #include "../Header_file/bitmapclass.h"
 
 
@@ -15,7 +19,7 @@ BitmapClass::BitmapClass()
 BitmapClass::BitmapClass(const BitmapClass& other)
 {
 }
-
+  
 
 BitmapClass::~BitmapClass()
 {
@@ -26,10 +30,11 @@ bool BitmapClass::Initialize(ID3D11Device* device, int screenWidth, int screenHe
 {
 	bool result;
 
-
 	// Store the screen size.
-	m_screenWidth = screenWidth;
+
 	m_screenHeight = screenHeight;
+	m_screenWidth = screenWidth;
+
 
 	// Store the size in pixels that this bitmap should be rendered at.
 	m_bitmapWidth = bitmapWidth;

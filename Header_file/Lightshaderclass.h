@@ -9,11 +9,10 @@
 //////////////
 // INCLUDES //
 //////////////w
-#include <d3d11.h>
-#include <xnamath.h>
-#include <d3dx11async.h>
 
-#include <fstream>
+#include "pch.h"
+
+using namespace DirectX;
 using namespace std;
 
 

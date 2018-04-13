@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: main.cpp
 ////////////////////////////////////////////////////////////////////////////////
+#include "stdafx.h"
 #include "../Header_file/systemclass.h"
 
 
@@ -8,11 +9,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 {
 	SystemClass* System;
 	bool result;
-	
+
+	FILE *stream;
 	AllocConsole();
-	freopen("CONOUT$", "wt", stdout);
+	freopen_s(&stream,"CONOUT$", "wt", stdout);
 
 
+	
 	// Create the system object.
 	System = new SystemClass;
 	if(!System)

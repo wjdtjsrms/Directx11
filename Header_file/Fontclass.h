@@ -1,13 +1,14 @@
 #ifndef _FONTCLASS_H_
 #define _FONTCLASS_H_
 
-#include <D3D11.h>
-#include <xnamath.h>
-#include <fstream>
+#include "pch.h"
+#include "Textureclass.h"
 
+
+using namespace DirectX;
 using namespace std;
 
-#include "Textureclass.h"
+
 
 class FontClass
 {

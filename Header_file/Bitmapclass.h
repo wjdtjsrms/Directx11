@@ -4,18 +4,19 @@
 #ifndef _BITMAPCLASS_H_
 #define _BITMAPCLASS_H_
 
+//써먹는데가 없는데 뭐드라
+
 
 //////////////
 // INCLUDES //
 //////////////
-#include <d3d11.h>
-#include <xnamath.h>
 
-
+#include "pch.h"
 #include "textureclass.h"
 
-
+using namespace DirectX;
 using namespace std;
+
 
 
 
@@ -27,6 +28,7 @@ class BitmapClass
 private:
 	struct VertexType
 	{
+		
 		XMFLOAT3 position;
 		XMFLOAT2 texture;
 	};

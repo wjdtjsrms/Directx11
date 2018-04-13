@@ -1,3 +1,6 @@
+
+
+#include "stdafx.h"
 #include "../Header_file/Timeclass.h"
 
 TimerClass::TimerClass() { 

@@ -8,15 +8,16 @@
 //////////////
 // INCLUDES //
 //////////////
-#include <d3d11.h>
-#include <xnamath.h>
-#include <fstream>
+
+
+
+#include "pch.h"
 
 #include "textureclass.h"
 #include "obj_parser.h"
 
 using namespace std;
-
+using namespace DirectX;
 
 
 ////////////////////////////////////////////////////////////////////////////////

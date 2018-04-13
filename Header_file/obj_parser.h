@@ -1,11 +1,9 @@
 #ifndef _OBJ_PARSER_H_
 #define _OBJ_PARSER_H_
 
-#include <iostream>
-#include <fstream>
-#include <D3D11.h>
-#include <xnamath.h>
+#include "pch.h"
 
+using namespace DirectX;
 using namespace std;
 
 typedef struct

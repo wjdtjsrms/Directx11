@@ -1,3 +1,8 @@
+
+
+
+
+#include "stdafx.h"
 #include "../Header_file/Cpuclass.h"
 
 CpuClass::CpuClass() { 

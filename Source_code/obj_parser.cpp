@@ -1,3 +1,5 @@
+
+#include "stdafx.h"
 #include "../Header_file/obj_parser.h"
 
 

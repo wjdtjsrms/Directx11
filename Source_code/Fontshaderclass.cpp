@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: colorshaderclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
+#include "stdafx.h"
 #include "../Header_file/Fontshaderclass.h"
 
 
@@ -93,9 +94,10 @@ bool Fontshaderclass::InitializeShader(ID3D11Device* device, HWND hwnd, const WC
 	pixelShaderBuffer = 0;
 	
     // Compile the vertex shader code.
-	result = D3DX11CompileFromFile((LPCWSTR)vsFilename, NULL, NULL, "FontVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
-								   &vertexShaderBuffer, &errorMessage, NULL);
-
+	//result = D3DCompileFromFile((LPCWSTR)vsFilename, NULL, NULL, "FontVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	//							   &vertexShaderBuffer, &errorMessage, NULL);
+	
+	result= D3DCompileFromFile((LPCWSTR)vsFilename, NULL, NULL, "FontVertexShader", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 	if(FAILED(result))
 	{
 		// If the shader failed to compile it should have writen something to the error message.
@@ -115,8 +117,10 @@ bool Fontshaderclass::InitializeShader(ID3D11Device* device, HWND hwnd, const WC
 	}
 
     // Compile the pixel shader code.
-	result = D3DX11CompileFromFile((LPCWSTR)psFilename, NULL, NULL, "FontPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
-								   &pixelShaderBuffer, &errorMessage, NULL);
+	//result = D3DCompileFromFile((LPCWSTR)psFilename, NULL, NULL, "FontPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	//							   &pixelShaderBuffer, &errorMessage, NULL);
+
+	result = D3DCompileFromFile((LPCWSTR)psFilename, NULL, NULL, "FontPixelShader", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
 	if(FAILED(result))
 	{
 		// If the shader failed to compile it should have writen something to the error message.

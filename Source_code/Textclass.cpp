@@ -1,3 +1,5 @@
+
+#include "stdafx.h"
 #include "../Header_file/Textclass.h"
 
 
@@ -254,6 +256,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	VertexType* verticesPtr;
+
 
 	sentence->red = red;
 	sentence->blue = blue;

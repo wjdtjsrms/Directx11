@@ -1,6 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: colorshaderclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
+
+#include "stdafx.h"
 #include "../Header_file/Lightshaderclass.h"
 
 
@@ -93,8 +95,10 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 	pixelShaderBuffer = 0;
 
     // Compile the vertex shader code.
-	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "LightVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
-								   &vertexShaderBuffer, &errorMessage, NULL);
+//	result = D3DCompileFromFile(vsFilename, NULL, NULL, "LightVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+//								   &vertexShaderBuffer, &errorMessage, NULL);
+
+	result = D3DCompileFromFile((LPCWSTR)vsFilename, NULL, NULL, "LightVertexShader", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 
 	if(FAILED(result))
 	{
@@ -113,8 +117,12 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 	}
 
     // Compile the pixel shader code.
-	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "LightPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
-								   &pixelShaderBuffer, &errorMessage, NULL);
+//	result = D3DCompileFromFile(psFilename, NULL, NULL, "LightPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+//								   &pixelShaderBuffer, &errorMessage, NULL);
+
+
+	result = D3DCompileFromFile((LPCWSTR)psFilename, NULL, NULL, "LightPixelShader", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
+
 	if(FAILED(result))
 	{
 		// If the shader failed to compile it should have writen something to the error message.

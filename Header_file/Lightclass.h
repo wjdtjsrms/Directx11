@@ -1,9 +1,9 @@
 #ifndef _LIGHTCLASS_H_
 #define _LIGHTCLASS_H_
 
-#include <D3D11.h>
-#include <xnamath.h>
 
+#include "pch.h"
+using namespace DirectX;
 class LightClass
 {
 public:

@@ -72,9 +72,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>C:\Program Files %28x86%29\Windows Kits\10\bin\10.0.16299.0\x86;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.16299.0\um;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.16299.0\um\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -87,7 +87,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -95,10 +95,14 @@
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4005;4838</DisableSpecificWarnings>
       <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\source\repos\Directx11\DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)Source_code\stdafx.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,37 +156,71 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source_code\Bitmapclass.cpp" />
-    <ClCompile Include="Source_code\cameraclass.cpp" />
-    <ClCompile Include="Source_code\Cpuclass.cpp" />
-    <ClCompile Include="Source_code\D3dclass.cpp" />
-    <ClCompile Include="Source_code\Directx11.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="Source_code\Bitmapclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <ClCompile Include="Source_code\Fontclass.cpp" />
-    <ClCompile Include="Source_code\Fontshaderclass.cpp" />
-    <ClCompile Include="Source_code\Fpsclass.cpp" />
-    <ClCompile Include="Source_code\Graphicsclass.cpp" />
-    <ClCompile Include="Source_code\Inputclass.cpp" />
-    <ClCompile Include="Source_code\Lightclass.cpp" />
-    <ClCompile Include="Source_code\Lightshaderclass.cpp" />
+    <ClCompile Include="Source_code\cameraclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Cpuclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\D3dclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Fontclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Fontshaderclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Fpsclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Graphicsclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Inputclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Lightclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Lightshaderclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source_code\Main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source_code\Modelclass.cpp" />
-    <ClCompile Include="Source_code\obj_parser.cpp" />
-    <ClCompile Include="Source_code\stdafx.cpp" />
-    <ClCompile Include="Source_code\Systemclass.cpp" />
-    <ClCompile Include="Source_code\Textclass.cpp" />
-    <ClCompile Include="Source_code\Textureclass.cpp" />
-    <ClCompile Include="Source_code\Timeclass.cpp" />
+    <ClCompile Include="Source_code\Modelclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\obj_parser.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Systemclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Textclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Textureclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source_code\Timeclass.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header_file\Bitmapclass.h" />
     <ClInclude Include="Header_file\Cameraclass.h" />
     <ClInclude Include="Header_file\Cpuclass.h" />
     <ClInclude Include="Header_file\D3dclass.h" />
-    <ClInclude Include="Header_file\Directx11.h" />
     <ClInclude Include="Header_file\Fontclass.h" />
     <ClInclude Include="Header_file\Fontshaderclass.h" />
     <ClInclude Include="Header_file\FpsClass.h" />
@@ -192,33 +230,41 @@
     <ClInclude Include="Header_file\Lightshaderclass.h" />
     <ClInclude Include="Header_file\Modelclass.h" />
     <ClInclude Include="Header_file\obj_parser.h" />
-    <ClInclude Include="Header_file\Resource.h" />
-    <ClInclude Include="Header_file\stdafx.h" />
+    <ClInclude Include="Header_file\pch.h" />
     <ClInclude Include="Header_file\SystemClass.h" />
-    <ClInclude Include="Header_file\targetver.h" />
     <ClInclude Include="Header_file\Textclass.h" />
     <ClInclude Include="Header_file\Textureclass.h" />
     <ClInclude Include="Header_file\Timeclass.h" />
+    <ClInclude Include="Source_code\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Header_file\Directx11.rc" />
+    <ProjectReference Include="DirectXTK\DirectXTK_Desktop_2017_Win10.vcxproj">
+      <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Header_file\Directx11.ico" />
-    <Image Include="Header_file\small.ico" />
+    <None Include="Shader_code\Font.ps" />
+    <None Include="Shader_code\Font.vs" />
+    <None Include="Shader_code\Light.ps" />
+    <None Include="Shader_code\Light.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader_code\Light.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
     <Image Include="Resource\font.dds" />
     <Image Include="Resource\sample_img.dds" />
-    <Image Include="Resource\uv_sanp2.dds" />
     <Image Include="Resource\uv_snap.dds" />
+    <Image Include="Resource\uv_snap2.dds" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resource\Font.txt" />
     <Text Include="Resource\model.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="Resource\test.obj" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>
