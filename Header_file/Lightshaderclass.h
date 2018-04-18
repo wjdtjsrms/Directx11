@@ -54,7 +54,8 @@ public:
 
 private:
 	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*, const WCHAR*);
-	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*);
+	bool initializeDesc(ID3D11Device*);
+
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
 

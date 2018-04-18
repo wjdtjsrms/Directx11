@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <ExecutablePath>C:\Program Files %28x86%29\Windows Kits\10\bin\10.0.16299.0\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.16299.0\um;$(IncludePath)</IncludePath>
+    <IncludePath>C:\source\repos\Directx11\FX11\inc;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.16299.0\um;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.16299.0\um\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -95,7 +95,7 @@
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4005;4838</DisableSpecificWarnings>
       <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>C:\source\repos\Directx11\DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\source\repos\Directx11\FX11\inc;C:\source\repos\Directx11\DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)Source_code\stdafx.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
@@ -187,6 +187,7 @@
     <ClCompile Include="Source_code\Lightclass.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source_code\LightFX.cpp" />
     <ClCompile Include="Source_code\Lightshaderclass.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -227,6 +228,7 @@
     <ClInclude Include="Header_file\Graphicsclass.h" />
     <ClInclude Include="Header_file\Inputclass.h" />
     <ClInclude Include="Header_file\Lightclass.h" />
+    <ClInclude Include="Header_file\LightFX.h" />
     <ClInclude Include="Header_file\Lightshaderclass.h" />
     <ClInclude Include="Header_file\Modelclass.h" />
     <ClInclude Include="Header_file\obj_parser.h" />
@@ -241,6 +243,9 @@
     <ProjectReference Include="DirectXTK\DirectXTK_Desktop_2017_Win10.vcxproj">
       <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
     </ProjectReference>
+    <ProjectReference Include="FX11\Effects11_2017_Win10.vcxproj">
+      <Project>{df460eab-570d-4b50-9089-2e2fc801bf38}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader_code\Font.ps" />
@@ -249,6 +254,9 @@
     <None Include="Shader_code\Light.vs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shader_code\DefineFX.fx">
+      <FileType>Document</FileType>
+    </None>
     <FxCompile Include="Shader_code\Light.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>

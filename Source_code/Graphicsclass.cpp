@@ -11,6 +11,7 @@ GraphicsClass::GraphicsClass()
 	m_Camera = 0;
 	m_Model = 0;
 	m_LightShader = 0;
+	m_LightFx = 0;
 	m_Light = 0;
 	m_Text = 0;
 }
@@ -89,6 +90,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_LightFx = new LightFxClass;
+	if (!m_LightFx)
+	{
+		return false;
+	}
+
+	// Initialize the light shader object.
+	result = m_LightFx->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the light object.
 	m_Light = new LightClass;
 	if (!m_Light)
@@ -143,6 +158,14 @@ void GraphicsClass::Shutdown()
 		delete m_LightShader;
 		m_LightShader = 0;
 	}
+
+	if (m_LightFx)
+	{
+		m_LightFx->Shutdown();
+		delete m_LightFx;
+		m_LightFx = 0;
+	}
+
 
 	// Release the model object.
 	if(m_Model)
@@ -209,8 +232,8 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpuPercent, float
 bool GraphicsClass::Render(int mouseX, int mouseY)
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix,orthoMatrix;
-	XMVECTOR Direction, DiffuseColor, AmbeintColor, SpecularColor, CameraPostion;
-	float SpecularPower;
+	XMVECTOR Direction, DiffuseColor, AmbeintColor, SpecularColor, CameraPostion, SpecularPower;
+	
 	
 //	XMMATRIX Rotation;
 	
@@ -246,13 +269,19 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 	m_Light->GetSpecularPower(SpecularPower);
 
 	CameraPostion = XMLoadFloat3(&m_Camera->GetPosition());
-
+	
 	worldMatrix = worldMatrix*XMMatrixRotationY(-rotationX)*XMMatrixRotationX(-rotationY);
 
 	m_Model->Render(m_D3D->GetDeviceContext());
 	// Render the model using the color shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion,SpecularColor,SpecularPower,m_Model->GetTexture());
-	if(!result)
+	//result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion,SpecularColor,SpecularPower,m_Model->GetTexture());
+	//if(!result)
+	//{
+	//	return false;
+	//}
+
+	result = m_LightFx->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion, SpecularColor, SpecularPower, m_Model->GetTexture());
+	if (!result)
 	{
 		return false;
 	}

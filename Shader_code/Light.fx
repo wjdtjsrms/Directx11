@@ -3,28 +3,46 @@
 //
 // Transforms and colors geometry.
 //***************************************************************************************
-
-cbuffer MatrixBuffer
+struct MatrixBuffer
 {
     matrix worldMatrix;
     matrix viewMatrix;
     matrix projectionMatrix;
 };
 
-cbuffer CameraBuffer
-{
-    float4 cameraPosition;
-	
-};
-
-cbuffer LightBuffer
+struct LightBuffer
 {
     float4 ambientColor;
     float4 diffuseColor;
     float3 lightDirection;
-    float specularPower;
     float4 specularColor;
+    float4 specularPower;
+
 };
+
+struct CamaraBuffer
+{
+    float4 cameraPosition;
+};
+
+
+
+cbuffer StandardMatrix
+{
+    MatrixBuffer gMatrix;
+};
+
+cbuffer StandardMatrixCamera
+{
+    CamaraBuffer gCamera;
+	
+};
+
+cbuffer DirectionalLight
+{
+    LightBuffer gLight;
+};
+
 
 
 struct VertexIn
@@ -57,24 +75,24 @@ VertexOut VS(VertexIn vin)
     vin.position.w = 1.0f;
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
-    output.position = mul(vin.position, worldMatrix);
-    output.position = mul(output.position, viewMatrix);
-    output.position = mul(output.position, projectionMatrix);
+    output.position = mul(vin.position, gMatrix.worldMatrix);
+    output.position = mul(output.position, gMatrix.viewMatrix);
+    output.position = mul(output.position, gMatrix.projectionMatrix);
     
 	// Store the input color for the pixel shader to use.
     output.tex = vin.tex;
 
 	// Calculate the normal vector against the world matrix only.
-    output.normal = mul(vin.normal, (float3x3) worldMatrix);
+    output.normal = mul(vin.normal, (float3x3) gMatrix.worldMatrix);
 
 	// Normalize the normal vector.
     output.normal = normalize(output.normal);
 
 	// Calculate the position of the vertex in the world.
-    worldPosition = mul(vin.position, worldMatrix);
+    worldPosition = mul(vin.position, gMatrix.worldMatrix);
 	 
 	// Determine the viewing direction based on the position of the camera and the position of the vertex in the world. 
-    output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
+    output.viewDirection = gCamera.cameraPosition.xyz - worldPosition.xyz;
 	  
 	// Normalize the viewing direction vector. 
     output.viewDirection = normalize(output.viewDirection);
@@ -88,7 +106,7 @@ float4 PS(VertexOut pin) : SV_Target
     float4 textureColor;
     float4 textureColor2;
     float4 blendColor;
-
+    
 
     float3 lightDir; //direction
     float lightIntensity; //power
@@ -105,24 +123,24 @@ float4 PS(VertexOut pin) : SV_Target
     blendColor = saturate(blendColor);
 
 	// Invert the light direction for calculations.
-    lightDir = -lightDirection;
+    lightDir = -gLight.lightDirection;
 
 	// Calculate the amount of light on this pixel.
     lightIntensity = saturate(dot(pin.normal, lightDir)); //value clamp 0~1
 
 	 // Determine the final amount of diffuse color based on the diffuse color combined with the light intensity.
-    color = ambientColor;
+    color = gLight.ambientColor;
 
     specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     if (lightIntensity > 0.0f)
     {
-        color += (diffuseColor * lightIntensity);
+        color += (gLight.diffuseColor * lightIntensity);
 
         color = saturate(color);
 
         reflection = normalize(2 * lightIntensity * pin.normal - lightDir);
-        specular = pow(saturate(dot(reflection, pin.viewDirection)), specularPower) * specularColor;
+        specular = pow(saturate(dot(reflection, pin.viewDirection)), gLight.specularPower) * gLight.specularColor;
 
     }
 
@@ -134,11 +152,14 @@ float4 PS(VertexOut pin) : SV_Target
 
     color = saturate(color + specular); // clamp 0.0~1.0
 
+    float4 test;
+    test = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
     return color;
     
 }
 
-technique11 ColorTech
+technique11 LightTech
 {
     pass P0
     {

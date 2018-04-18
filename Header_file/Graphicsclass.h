@@ -12,6 +12,7 @@
 #include "cameraclass.h"
 #include "modelclass.h"
 #include "lightshaderclass.h"
+#include "LightFX.h"
 #include "lightclass.h"
 #include "Textclass.h"
 
@@ -50,6 +51,7 @@ private:
 	CameraClass* m_Camera;
 	ModelClass* m_Model;
 	LightShaderClass* m_LightShader;
+	LightFxClass* m_LightFx;
 	LightClass* m_Light;
 	TextClass* m_Text;
 };

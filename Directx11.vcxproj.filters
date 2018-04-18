@@ -119,6 +119,9 @@
     <ClCompile Include="Source_code\obj_parser.cpp">
       <Filter>소스 파일\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Source_code\LightFX.cpp">
+      <Filter>소스 파일\Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source_code\stdafx.h">
@@ -178,6 +181,9 @@
     <ClInclude Include="Header_file\Textureclass.h">
       <Filter>헤더 파일\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="Header_file\LightFX.h">
+      <Filter>헤더 파일\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader_code\Light.vs">
@@ -190,6 +196,9 @@
       <Filter>shader</Filter>
     </None>
     <None Include="Shader_code\Light.ps">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="Shader_code\DefineFX.fx">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>

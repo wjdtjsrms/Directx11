@@ -23,7 +23,7 @@ void LightClass::setSpecularColor(float red, float green, float blue, float alph
 }
 void LightClass::SetSpecularPower(float power)
 {
-	m_specularPower = power;
+	m_specularPower = XMFLOAT4(power, power, power, power);
 	return;
 }
 
@@ -69,8 +69,8 @@ void LightClass::GetSpecularColor(XMVECTOR& specularColor)
 	return;
 }
 
-void LightClass::GetSpecularPower(float& specularPower)
+void LightClass::GetSpecularPower(XMVECTOR& specularPower)
 {
-	specularPower = m_specularPower;
+	specularPower = XMLoadFloat4(&m_specularPower);
 	return;
 }
