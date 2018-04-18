@@ -26,13 +26,14 @@ private:
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 lightDirection;
 		XMFLOAT4 specularColor;
-		float specularPower;
+		XMFLOAT4 specularPower;
 	};
 	struct  CameraBufferType
 	{
 		XMFLOAT4 cameraPosition;
 
 	};
+
 
 public:
 	LightFxClass();
@@ -51,7 +52,7 @@ private:
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
 
 	bool SetFXParameters(ID3D11DeviceContext*, XMMATRIX&, XMMATRIX&, XMMATRIX&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, ID3D11ShaderResourceView**);
-	void RenderShader(ID3D11DeviceContext*, int);
+	bool RenderShader(ID3D11DeviceContext*, int);
 
 private:
 
@@ -74,6 +75,7 @@ private:
 	MatrixBufferType mWorldBuffer;
 	LightBufferType mfxBuffer;
 	CameraBufferType mCameraBuffer;
+
 
 
 

@@ -152,8 +152,8 @@ bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHA
 	fxShaderBuffer = 0;
 
 	//D3DX11CompileEffectFromFile fx 는 이거 밑에는 hlsl
-	result = D3DCompileFromFile((LPCWSTR)fxFileName, NULL, NULL, "LightVertexShader", "fx_5_0", 0, 0, &fxShaderBuffer, &errorMessage);
-
+	result = D3DCompileFromFile((LPCWSTR)fxFileName, NULL, NULL, NULL, "fx_5_0", 0, 0, &fxShaderBuffer, &errorMessage);
+	
 	if (FAILED(result))
 	{
 		// If the shader failed to compile it should have writen something to the error message.
@@ -316,7 +316,7 @@ void LightFxClass::OutputShaderErrorMessage(ID3DBlob* errorMessage, HWND hwnd, c
 bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix,
 	XMMATRIX& projectionMatrix, XMVECTOR& lightDirection, XMVECTOR& diffuseColor, XMVECTOR& ambientColor, XMVECTOR& cameraPosition, XMVECTOR& specularColor, XMVECTOR& specularPower, ID3D11ShaderResourceView** textureArray)
 {
-	HRESULT result;
+
 
 
 	XMStoreFloat4x4(&mWorldBuffer.world, worldMatrix);
@@ -327,15 +327,27 @@ bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX&
 	XMStoreFloat4(&mfxBuffer.diffuseColor, diffuseColor);
 	XMStoreFloat3(&mfxBuffer.lightDirection, lightDirection);
 	XMStoreFloat4(&mfxBuffer.specularColor, specularColor);
-	XMStoreFloat(&mfxBuffer.specularPower, specularPower);
+	XMStoreFloat4(&mfxBuffer.specularPower, specularPower);
+
 
 	XMStoreFloat4(&mCameraBuffer.cameraPosition, cameraPosition);
 
-	
+
 
 	mfxWorldViewProj = m_fxShader->GetVariableByName("gMatrix");
-	mfxLight = m_fxShader->GetVariableByName("gCamera");
-	mfxCamera = m_fxShader->GetVariableByName("gLight");
+	mfxLight = m_fxShader->GetVariableByName("gLight");
+	mfxCamera = m_fxShader->GetVariableByName("gCamera");
+
+
+
+
+	
+	return true;
+}
+
+bool LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+{
+	HRESULT result;
 
 	result = mfxWorldViewProj->SetRawValue(&mWorldBuffer, 0, sizeof(mWorldBuffer));
 
@@ -343,6 +355,7 @@ bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX&
 	{
 		return false;
 	}
+
 
 	result = mfxLight->SetRawValue(&mfxBuffer, 0, sizeof(mfxBuffer));
 
@@ -352,6 +365,7 @@ bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX&
 		return false;
 	}
 
+
 	result = mfxCamera->SetRawValue(&mCameraBuffer, 0, sizeof(mCameraBuffer));
 
 
@@ -360,12 +374,6 @@ bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX&
 		return false;
 	}
 
-	
-	return true;
-}
-
-void LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
-{
 
 
 
@@ -387,5 +395,5 @@ void LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 
-	return;
+	return true;
 }

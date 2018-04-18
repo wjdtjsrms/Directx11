@@ -27,15 +27,10 @@ struct CamaraBuffer
 
 
 
+
 cbuffer StandardMatrix
 {
     MatrixBuffer gMatrix;
-};
-
-cbuffer StandardMatrixCamera
-{
-    CamaraBuffer gCamera;
-	
 };
 
 cbuffer DirectionalLight
@@ -43,6 +38,11 @@ cbuffer DirectionalLight
     LightBuffer gLight;
 };
 
+cbuffer StandardMatrixCamera
+{
+    CamaraBuffer gCamera;
+	
+};
 
 
 struct VertexIn
@@ -155,7 +155,7 @@ float4 PS(VertexOut pin) : SV_Target
     float4 test;
     test = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-    return color;
+    return test;
     
 }
 
