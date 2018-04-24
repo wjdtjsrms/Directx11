@@ -35,7 +35,7 @@ float4 LightPixelShader(Pixel_InputType input) : SV_TARGET
     float4 textureColor;
 	float4 textureColor2;
 	float4 blendColor;
-	float4 test;
+
 
 	float3 lightDir; //direction
     float lightIntensity; //power
@@ -80,7 +80,7 @@ float4 LightPixelShader(Pixel_InputType input) : SV_TARGET
 	 color = color * blendColor;
 
 	 color = saturate(color + specular); // clamp 0.0~1.0
-	 test=float4(1.0f,1.0f,1.0f,1.0f);
 
-	return test;
+
+	return color;
 }

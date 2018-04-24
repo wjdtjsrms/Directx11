@@ -34,7 +34,7 @@ private:
 		XMFLOAT4 ambientColor;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 lightDirection;
-		float specularPower;
+		float  specularPower;
 		XMFLOAT4 specularColor;
 	};
 	struct  CameraBufferType

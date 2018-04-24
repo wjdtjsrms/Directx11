@@ -68,25 +68,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the model object.
+	// 기능 분리
 	result = m_Model->Initialize(m_D3D->GetDevice(), L"Resource/test.obj", L"Resource/model.txt", L"Resource/uv_snap.dds", L"Resource/uv_snap2.dds"); //change file
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the light shader object.
-	m_LightShader = new LightShaderClass;
-	if (!m_LightShader)
-	{
-		return false;
-	}
-
-	// Initialize the light shader object.
-	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -103,6 +89,26 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
 		return false;
 	}
+
+
+	// Create the light shader object.
+	m_LightShader = new LightShaderClass;
+	if (!m_LightShader)
+	{
+		return false;
+	}
+
+
+
+	// Initialize the light shader object.
+	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+
 
 	// Create the light object.
 	m_Light = new LightClass;
@@ -232,8 +238,9 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpuPercent, float
 bool GraphicsClass::Render(int mouseX, int mouseY)
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix,orthoMatrix;
-	XMVECTOR Direction, DiffuseColor, AmbeintColor, SpecularColor, CameraPostion, SpecularPower;
-	
+	XMVECTOR Direction, DiffuseColor, AmbeintColor, SpecularColor, CameraPostion;
+
+	float SpecularPower;
 	
 //	XMMATRIX Rotation;
 	
@@ -266,7 +273,7 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 	m_Light->GetDiffuseColor(DiffuseColor);
 	m_Light->GetAmbientColor(AmbeintColor);
 	m_Light->GetSpecularColor(SpecularColor);
-	m_Light->GetSpecularPower(SpecularPower);
+	SpecularPower = m_Light->GetSpecularPower();
 
 	CameraPostion = XMLoadFloat3(&m_Camera->GetPosition());
 	
@@ -274,11 +281,14 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 
 	m_Model->Render(m_D3D->GetDeviceContext());
 	// Render the model using the color shader.
-	//result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion,SpecularColor,SpecularPower,m_Model->GetTexture());
-	//if(!result)
-	//{
-	//	return false;
-	//}
+
+
+
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion,SpecularColor,SpecularPower,m_Model->GetTexture());
+	if(!result)
+	{
+		return false;
+	}
 
 	result = m_LightFx->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion, SpecularColor, SpecularPower, m_Model->GetTexture());
 	if (!result)
@@ -296,7 +306,7 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 	m_D3D->TurnOnAlphaBlending();
 
 	// Render the text string of the render count.
-	m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	result=m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;

@@ -254,9 +254,10 @@
     <None Include="Shader_code\Light.vs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader_code\DefineFX.fx">
-      <FileType>Document</FileType>
-    </None>
+    <FxCompile Include="Shader_code\color.fx">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+    </FxCompile>
     <FxCompile Include="Shader_code\Light.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>

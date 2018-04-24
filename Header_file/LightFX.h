@@ -20,18 +20,27 @@ private:
 		XMFLOAT4X4 projection;
 	};
 
+
+
 	struct LightBufferType
 	{
 		XMFLOAT4 ambientColor;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 lightDirection;
 		XMFLOAT4 specularColor;
-		XMFLOAT4 specularPower;
+		float specularPower;
 	};
 	struct  CameraBufferType
 	{
 		XMFLOAT4 cameraPosition;
 
+	};
+
+
+	struct Vertex
+	{
+		XMFLOAT3 Pos;
+		XMFLOAT4 Color;
 	};
 
 
@@ -43,7 +52,7 @@ public:
 
 	bool Initialize(ID3D11Device*, HWND);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, XMMATRIX&, XMMATRIX&, XMMATRIX&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, ID3D11ShaderResourceView**);
+	bool Render(ID3D11DeviceContext*, int, XMMATRIX&, XMMATRIX&, XMMATRIX&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, float, ID3D11ShaderResourceView**);
 
 private:
 	bool initializeDesc(ID3D11Device*);
@@ -51,8 +60,8 @@ private:
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
 
-	bool SetFXParameters(ID3D11DeviceContext*, XMMATRIX&, XMMATRIX&, XMMATRIX&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, ID3D11ShaderResourceView**);
-	bool RenderShader(ID3D11DeviceContext*, int);
+	bool SetFXParameters(ID3D11DeviceContext*, XMMATRIX&, XMMATRIX&, XMMATRIX&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, float, ID3D11ShaderResourceView**);
+	void RenderShader(ID3D11DeviceContext*, int);
 
 private:
 
@@ -73,6 +82,7 @@ private:
 	ID3DX11EffectVariable* mfxCamera;
 
 	MatrixBufferType mWorldBuffer;
+
 	LightBufferType mfxBuffer;
 	CameraBufferType mCameraBuffer;
 

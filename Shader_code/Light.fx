@@ -16,7 +16,7 @@ struct LightBuffer
     float4 diffuseColor;
     float3 lightDirection;
     float4 specularColor;
-    float4 specularPower;
+    float specularPower;
 
 };
 

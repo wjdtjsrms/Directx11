@@ -45,7 +45,7 @@ void LightFxClass::Shutdown()
 }
 
 bool LightFxClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix,
-	XMMATRIX& projectionMatrix, XMVECTOR& lightDirection, XMVECTOR& diffuseColor, XMVECTOR& ambientColor, XMVECTOR& cameraPosition, XMVECTOR& specularColor, XMVECTOR& specularPower, ID3D11ShaderResourceView** textureArray)
+	XMMATRIX& projectionMatrix, XMVECTOR& lightDirection, XMVECTOR& diffuseColor, XMVECTOR& ambientColor, XMVECTOR& cameraPosition, XMVECTOR& specularColor, float specularPower, ID3D11ShaderResourceView** textureArray)
 {
 	bool result;
 
@@ -153,7 +153,7 @@ bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHA
 
 	//D3DX11CompileEffectFromFile fx 는 이거 밑에는 hlsl
 	result = D3DCompileFromFile((LPCWSTR)fxFileName, NULL, NULL, NULL, "fx_5_0", 0, 0, &fxShaderBuffer, &errorMessage);
-	
+
 	if (FAILED(result))
 	{
 		// If the shader failed to compile it should have writen something to the error message.
@@ -171,6 +171,8 @@ bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHA
 	}
 
 
+
+
 	result = D3DX11CreateEffectFromMemory(fxShaderBuffer->GetBufferPointer(), fxShaderBuffer->GetBufferSize(),
 		0, device, &m_fxShader);
 
@@ -180,7 +182,7 @@ bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHA
 		return false;
 	}
 
-	
+	fxShaderBuffer->Release();
 	// Create the vertex input layout description.
 	// This setup needs to match the VertexType stucture in the ModelClass and in the shader.
 	polygonLayout[0].SemanticName = "POSITION";
@@ -213,6 +215,7 @@ bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHA
 	D3DX11_PASS_DESC passdesc;
 	mTech = m_fxShader->GetTechniqueByName("LightTech");
 	mTech->GetPassByIndex(0)->GetDesc(&passdesc);
+	
 	// Create the vertex input layout.
 	result = device->CreateInputLayout(polygonLayout, numElements, passdesc.pIAInputSignature,
 		passdesc.IAInputSignatureSize, &m_layout);
@@ -314,9 +317,9 @@ void LightFxClass::OutputShaderErrorMessage(ID3DBlob* errorMessage, HWND hwnd, c
 
 
 bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix,
-	XMMATRIX& projectionMatrix, XMVECTOR& lightDirection, XMVECTOR& diffuseColor, XMVECTOR& ambientColor, XMVECTOR& cameraPosition, XMVECTOR& specularColor, XMVECTOR& specularPower, ID3D11ShaderResourceView** textureArray)
+	XMMATRIX& projectionMatrix, XMVECTOR& lightDirection, XMVECTOR& diffuseColor, XMVECTOR& ambientColor, XMVECTOR& cameraPosition, XMVECTOR& specularColor, float specularPower, ID3D11ShaderResourceView** textureArray)
 {
-
+	HRESULT result;
 
 
 	XMStoreFloat4x4(&mWorldBuffer.world, worldMatrix);
@@ -327,27 +330,17 @@ bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX&
 	XMStoreFloat4(&mfxBuffer.diffuseColor, diffuseColor);
 	XMStoreFloat3(&mfxBuffer.lightDirection, lightDirection);
 	XMStoreFloat4(&mfxBuffer.specularColor, specularColor);
-	XMStoreFloat4(&mfxBuffer.specularPower, specularPower);
-
+	mfxBuffer.specularPower = specularPower;
 
 	XMStoreFloat4(&mCameraBuffer.cameraPosition, cameraPosition);
 
-
+	
 
 	mfxWorldViewProj = m_fxShader->GetVariableByName("gMatrix");
 	mfxLight = m_fxShader->GetVariableByName("gLight");
 	mfxCamera = m_fxShader->GetVariableByName("gCamera");
 
-
-
-
 	
-	return true;
-}
-
-bool LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
-{
-	HRESULT result;
 
 	result = mfxWorldViewProj->SetRawValue(&mWorldBuffer, 0, sizeof(mWorldBuffer));
 
@@ -356,7 +349,6 @@ bool LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 		return false;
 	}
 
-
 	result = mfxLight->SetRawValue(&mfxBuffer, 0, sizeof(mfxBuffer));
 
 
@@ -364,7 +356,6 @@ bool LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 	{
 		return false;
 	}
-
 
 	result = mfxCamera->SetRawValue(&mCameraBuffer, 0, sizeof(mCameraBuffer));
 
@@ -377,10 +368,31 @@ bool LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 
 
 
+
+	
+	return true;
+}
+
+void LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+{
+
+
+
 	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(m_layout);
 
+	D3DX11_TECHNIQUE_DESC techDesc;
+	mTech->GetDesc(&techDesc);
 
+	for (UINT p = 0; p < techDesc.Passes; p++) {
+
+		mTech->GetPassByIndex(p)->Apply(0, deviceContext);
+
+		deviceContext->DrawIndexed(indexCount, 0, 0);
+	}
+
+	//mTech->GetPassByIndex(indexCount)->Apply(0, deviceContext);
+	//deviceContext->DrawIndexed(indexCount, 0, 0);
 
 
 	// Set the vertex and pixel shaders that will be used to render this triangle.
@@ -388,12 +400,12 @@ bool LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 	//deviceContext->PSSetShader(m_pixelShader, NULL, 0);
 
 	// Set the sampler state in the pixel shader.
-	//deviceContext->PSSetSamplers(0, 1, &m_sampleState);
+	
 
-	mTech->GetPassByIndex(indexCount)->Apply(0, deviceContext);
+	
 
 	// Render the triangle.
-	deviceContext->DrawIndexed(indexCount, 0, 0);
+	
 
-	return true;
+	return;
 }

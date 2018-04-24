@@ -198,12 +198,12 @@
     <None Include="Shader_code\Light.ps">
       <Filter>shader</Filter>
     </None>
-    <None Include="Shader_code\DefineFX.fx">
-      <Filter>shader</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader_code\Light.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader_code\color.fx">
       <Filter>shader</Filter>
     </FxCompile>
   </ItemGroup>
