@@ -5,12 +5,14 @@
 
 LightFxClass::LightFxClass()
 {
+
+	m_fxShader = 0;
 	m_layout = 0;
-	m_matrixBuffer = 0;
-	m_sampleState = 0;
-	m_lightBuffer = 0;
-	m_cameraBuffer = 0;
-	m_lightBuffer = 0;
+	mTech = 0;
+	mfxWorldViewProj = 0;
+	mBoxVB = 0;
+	mBoxIB = 0;
+
 
 }
 
@@ -22,246 +24,18 @@ LightFxClass::~LightFxClass()
 {
 }
 
-bool LightFxClass::Initialize(ID3D11Device* device, HWND hwnd)
-{
-	bool result;
-
-
-	result = InitializeShader(device, hwnd, L"Shader_code/Light.fx");
-	if (!result)
-	{
-		return false;
-	}
-	return true;
-}
-
-
 void LightFxClass::Shutdown()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
-	LightFxClass();
+	ShutdownShader();
 
 	return;
 }
 
-bool LightFxClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix,
-	XMMATRIX& projectionMatrix, XMVECTOR& lightDirection, XMVECTOR& diffuseColor, XMVECTOR& ambientColor, XMVECTOR& cameraPosition, XMVECTOR& specularColor, float specularPower, ID3D11ShaderResourceView** textureArray)
-{
-	bool result;
-
-
-	// Set the shader parameters that it will use for rendering.
-	result = SetFXParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightDirection, diffuseColor, ambientColor, cameraPosition, specularColor, specularPower, textureArray);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Now render the prepared buffers with the shader.
-	RenderShader(deviceContext, indexCount);
-
-	return true;
-}
-
-bool LightFxClass::initializeDesc(ID3D11Device* device) {
-
-	HRESULT result;
-
-	D3D11_BUFFER_DESC matrixBufferDesc;
-	D3D11_SAMPLER_DESC samplerDesc;
-	D3D11_BUFFER_DESC lightBufferDesc;
-	D3D11_BUFFER_DESC cameraBufferDesc;
-
-
-	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; //linear interpolation
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP; // 0.0f~1.0f if value is over that value is resize
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cameraBufferDesc.ByteWidth = sizeof(CameraBufferType);
-	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cameraBufferDesc.MiscFlags = 0;
-	cameraBufferDesc.StructureByteStride = 0;
-
-	result = device->CreateBuffer(&cameraBufferDesc, NULL, &m_cameraBuffer);
-	if (FAILED(result)) {
-		return false;
-	}
-
-
-	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
-	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = sizeof(LightBufferType); //buffer size is 16 * x ?
-	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc.MiscFlags = 0;
-	lightBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
-	return true;
-}
-
-bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHAR* fxFileName) {
-
-	HRESULT result;
-	ID3DBlob* errorMessage;
-	ID3DBlob* fxShaderBuffer;
-
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
-	unsigned int numElements;
-
-	// Initialize the pointers this function will use to null.
-	errorMessage = 0;
-	fxShaderBuffer = 0;
-
-	//D3DX11CompileEffectFromFile fx 는 이거 밑에는 hlsl
-	result = D3DCompileFromFile((LPCWSTR)fxFileName, NULL, NULL, NULL, "fx_5_0", 0, 0, &fxShaderBuffer, &errorMessage);
-
-	if (FAILED(result))
-	{
-		// If the shader failed to compile it should have writen something to the error message.
-		if (errorMessage)
-		{
-			OutputShaderErrorMessage(errorMessage, hwnd, fxFileName);
-		}
-		// If there was  nothing in the error message then it simply could not find the shader file itself.
-		else
-		{
-			MessageBox(hwnd, fxFileName, L"Missing fx File", MB_OK);
-		}
-
-		return false;
-	}
-
-
-
-
-	result = D3DX11CreateEffectFromMemory(fxShaderBuffer->GetBufferPointer(), fxShaderBuffer->GetBufferSize(),
-		0, device, &m_fxShader);
-
-
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	fxShaderBuffer->Release();
-	// Create the vertex input layout description.
-	// This setup needs to match the VertexType stucture in the ModelClass and in the shader.
-	polygonLayout[0].SemanticName = "POSITION";
-	polygonLayout[0].SemanticIndex = 0;
-	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[0].InputSlot = 0;
-	polygonLayout[0].AlignedByteOffset = 0;
-	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[0].InstanceDataStepRate = 0;
-
-	polygonLayout[1].SemanticName = "TEXCOORD";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT; // x y or u v
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
-
-	polygonLayout[2].SemanticName = "NORMAL";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
-
-	// Get a count of the elements in the layout.
-	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
-
-	D3DX11_PASS_DESC passdesc;
-	mTech = m_fxShader->GetTechniqueByName("LightTech");
-	mTech->GetPassByIndex(0)->GetDesc(&passdesc);
-	
-	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, passdesc.pIAInputSignature,
-		passdesc.IAInputSignatureSize, &m_layout);
-
-
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-
-
-	fxShaderBuffer->Release();
-	initializeDesc(device);
-
-
-	return true;
-}
-
-
 void LightFxClass::ShutdownShader()
 {
 	// Release the light constant buffer.
-	if (m_lightBuffer)
-	{
-		m_lightBuffer->Release();
-		m_lightBuffer = 0;
-	}
-	if (m_cameraBuffer) {
-		m_cameraBuffer->Release();
-		m_cameraBuffer = 0;
-	}
 
-	// Release the sampler state.
-	if (m_sampleState)
-	{
-		m_sampleState->Release();
-		m_sampleState = 0;
-	}
-
-	// Release the matrix constant buffer.
-	if (m_matrixBuffer)
-	{
-		m_matrixBuffer->Release();
-		m_matrixBuffer = 0;
-	}
 
 	// Release the layout.
 	if (m_layout)
@@ -273,6 +47,16 @@ void LightFxClass::ShutdownShader()
 	if (m_fxShader) {
 		m_fxShader->Release();
 		m_fxShader = 0;
+	}
+
+
+	if (mBoxIB) {
+		mBoxIB->Release();
+		mBoxIB = 0;
+	}
+	if (mBoxVB) {
+		mBoxVB->Release();
+		mBoxVB = 0;
 	}
 
 	return;
@@ -316,58 +100,134 @@ void LightFxClass::OutputShaderErrorMessage(ID3DBlob* errorMessage, HWND hwnd, c
 
 
 
+bool LightFxClass::Initialize(ID3D11Device* device, HWND hwnd)
+{
+	bool result;
+
+
+	result = InitializeShader(device, hwnd, L"Shader_code/color.fx");
+	if (!result)
+	{
+		return false;
+	}
+	return true;
+}
+
+
+bool LightFxClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix,
+	XMMATRIX& projectionMatrix, XMVECTOR& lightDirection, XMVECTOR& diffuseColor, XMVECTOR& ambientColor, XMVECTOR& cameraPosition, XMVECTOR& specularColor, float specularPower, ID3D11ShaderResourceView** textureArray)
+{
+	bool result;
+
+
+	// Set the shader parameters that it will use for rendering.
+	result = SetFXParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightDirection, diffuseColor, ambientColor, cameraPosition, specularColor, specularPower, textureArray);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Now render the prepared buffers with the shader.
+	RenderShader(deviceContext, indexCount);
+
+	return true;
+}
+
+
+
+bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHAR* fxFileName) {
+
+	HRESULT result;
+
+	ID3DBlob* errorMessage=0;
+	ID3DBlob* fxShaderBuffer=0;
+
+	DWORD shaderFlags = 0;
+#if defined( DEBUG ) || defined( _DEBUG )
+	shaderFlags |= D3D10_SHADER_DEBUG;
+	shaderFlags |= D3D10_SHADER_SKIP_OPTIMIZATION;
+#endif
+
+
+	result = D3DCompileFromFile((LPCWSTR)fxFileName, NULL, NULL, NULL, "fx_5_0",
+		shaderFlags, 0, &fxShaderBuffer, &errorMessage);
+
+	if (FAILED(result))
+	{
+		// If the shader failed to compile it should have writen something to the error message.
+		if (errorMessage)
+		{
+			OutputShaderErrorMessage(errorMessage, hwnd, fxFileName);
+		}
+		// If there was  nothing in the error message then it simply could not find the shader file itself.
+		else
+		{
+			MessageBox(hwnd, fxFileName, L"Missing fx File", MB_OK);
+		}
+
+		return false;
+	}
+
+	result = D3DX11CreateEffectFromMemory(fxShaderBuffer->GetBufferPointer(), fxShaderBuffer->GetBufferSize(),
+		0, device, &m_fxShader);
+
+
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	fxShaderBuffer->Release();
+
+	mTech = m_fxShader->GetTechniqueByName("ColorTech");
+	mfxWorldViewProj = m_fxShader->GetVariableByName("gWorldViewProj")->AsMatrix();
+
+	// Create the vertex input layout.
+	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	// Create the input layout
+	D3DX11_PASS_DESC passDesc;
+	mTech->GetPassByIndex(0)->GetDesc(&passDesc);
+	
+	// Create the vertex input layout.
+	result = device->CreateInputLayout(vertexDesc, 2, passDesc.pIAInputSignature,
+		passDesc.IAInputSignatureSize, &m_layout);
+
+
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
+	return true;
+}
+
+
+
+
+
+
+
 bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix,
 	XMMATRIX& projectionMatrix, XMVECTOR& lightDirection, XMVECTOR& diffuseColor, XMVECTOR& ambientColor, XMVECTOR& cameraPosition, XMVECTOR& specularColor, float specularPower, ID3D11ShaderResourceView** textureArray)
 {
 	HRESULT result;
 
 
-	XMStoreFloat4x4(&mWorldBuffer.world, worldMatrix);
-	XMStoreFloat4x4(&mWorldBuffer.projection, projectionMatrix);
-	XMStoreFloat4x4(&mWorldBuffer.view, viewMatrix);
-
-	XMStoreFloat4(&mfxBuffer.ambientColor, ambientColor);
-	XMStoreFloat4(&mfxBuffer.diffuseColor, diffuseColor);
-	XMStoreFloat3(&mfxBuffer.lightDirection, lightDirection);
-	XMStoreFloat4(&mfxBuffer.specularColor, specularColor);
-	mfxBuffer.specularPower = specularPower;
-
-	XMStoreFloat4(&mCameraBuffer.cameraPosition, cameraPosition);
+	XMMATRIX worldViewProj = worldMatrix * viewMatrix*projectionMatrix;
 
 	
-
-	mfxWorldViewProj = m_fxShader->GetVariableByName("gMatrix");
-	mfxLight = m_fxShader->GetVariableByName("gLight");
-	mfxCamera = m_fxShader->GetVariableByName("gCamera");
-
-	
-
-	result = mfxWorldViewProj->SetRawValue(&mWorldBuffer, 0, sizeof(mWorldBuffer));
+	result=mfxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&worldViewProj));
 
 	if (FAILED(result))
 	{
 		return false;
 	}
-
-	result = mfxLight->SetRawValue(&mfxBuffer, 0, sizeof(mfxBuffer));
-
-
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	result = mfxCamera->SetRawValue(&mCameraBuffer, 0, sizeof(mCameraBuffer));
-
-
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-
-
-
 
 	
 	return true;
@@ -388,24 +248,90 @@ void LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 
 		mTech->GetPassByIndex(p)->Apply(0, deviceContext);
 
-		deviceContext->DrawIndexed(indexCount, 0, 0);
+		deviceContext->DrawIndexed(36, 0, 0);
 	}
 
-	//mTech->GetPassByIndex(indexCount)->Apply(0, deviceContext);
-	//deviceContext->DrawIndexed(indexCount, 0, 0);
-
-
-	// Set the vertex and pixel shaders that will be used to render this triangle.
-	//deviceContext->VSSetShader(m_vertexShader, NULL, 0);
-	//deviceContext->PSSetShader(m_pixelShader, NULL, 0);
-
-	// Set the sampler state in the pixel shader.
-	
-
-	
-
-	// Render the triangle.
 	
 
 	return;
+}
+
+
+bool LightFxClass::BuildGeometryBuffers(ID3D11Device* device)
+{
+	HRESULT result;
+
+	// Create vertex buffer
+	Vertex vertices[] =
+	{ 
+		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+		{ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4{ 0.0f, 0.0f, 0.0f, 1.0f } },
+		{ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4{ 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f } },
+		{ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4{ 0.0f, 0.0f, 1.0f, 1.0f } },
+		{ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4{ 1.0f, 1.0f, 0.0f, 1.0f } },
+		{ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4{ 0.0f, 1.0f, 1.0f, 1.0f } },
+		{ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4{ 1.0f, 0.0f, 1.0f, 1.0f } }
+	};
+
+	D3D11_BUFFER_DESC vbd;
+	vbd.Usage = D3D11_USAGE_IMMUTABLE;
+	vbd.ByteWidth = sizeof(Vertex) * 8;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = 0;
+	vbd.MiscFlags = 0;
+	vbd.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA vinitData;
+	vinitData.pSysMem = vertices;
+	result=device->CreateBuffer(&vbd, &vinitData, &mBoxVB);
+
+	if (FAILED(result)) {
+		return false;
+	}
+
+
+	// Create the index buffer
+
+	UINT indices[] = {
+		// front face
+		0, 1, 2,
+		0, 2, 3,
+
+		// back face
+		4, 6, 5,
+		4, 7, 6,
+
+		// left face
+		4, 5, 1,
+		4, 1, 0,
+
+		// right face
+		3, 2, 6,
+		3, 6, 7,
+
+		// top face
+		1, 5, 6,
+		1, 6, 2,
+
+		// bottom face
+		4, 0, 3,
+		4, 3, 7
+	};
+
+	D3D11_BUFFER_DESC ibd;
+	ibd.Usage = D3D11_USAGE_IMMUTABLE;
+	ibd.ByteWidth = sizeof(UINT) * 36;
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.CPUAccessFlags = 0;
+	ibd.MiscFlags = 0;
+	ibd.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA iinitData;
+	iinitData.pSysMem = indices;
+	result=device->CreateBuffer(&ibd, &iinitData, &mBoxIB);
+
+	if (FAILED(result)) {
+		return false;
+	}
+
+	return true;
 }
