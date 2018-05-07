@@ -10,8 +10,7 @@ LightFxClass::LightFxClass()
 	m_layout = 0;
 	mTech = 0;
 	mfxWorldViewProj = 0;
-	mBoxVB = 0;
-	mBoxIB = 0;
+
 
 
 }
@@ -50,14 +49,6 @@ void LightFxClass::ShutdownShader()
 	}
 
 
-	if (mBoxIB) {
-		mBoxIB->Release();
-		mBoxIB = 0;
-	}
-	if (mBoxVB) {
-		mBoxVB->Release();
-		mBoxVB = 0;
-	}
 
 	return;
 }
@@ -120,12 +111,14 @@ bool LightFxClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XM
 	bool result;
 
 
+
 	// Set the shader parameters that it will use for rendering.
 	result = SetFXParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightDirection, diffuseColor, ambientColor, cameraPosition, specularColor, specularPower, textureArray);
 	if (!result)
 	{
 		return false;
 	}
+
 
 	// Now render the prepared buffers with the shader.
 	RenderShader(deviceContext, indexCount);
@@ -143,6 +136,7 @@ bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHA
 	ID3DBlob* fxShaderBuffer=0;
 
 	DWORD shaderFlags = 0;
+
 #if defined( DEBUG ) || defined( _DEBUG )
 	shaderFlags |= D3D10_SHADER_DEBUG;
 	shaderFlags |= D3D10_SHADER_SKIP_OPTIMIZATION;
@@ -180,28 +174,18 @@ bool LightFxClass::InitializeShader(ID3D11Device*  device, HWND hwnd, const WCHA
 	fxShaderBuffer->Release();
 
 	mTech = m_fxShader->GetTechniqueByName("ColorTech");
+
 	mfxWorldViewProj = m_fxShader->GetVariableByName("gWorldViewProj")->AsMatrix();
+	mfxWorldMatrix = m_fxShader->GetVariableByName("gWorldMatrix")->AsMatrix();
+	mfxViewMatrix = m_fxShader->GetVariableByName("gViewMatrix")->AsMatrix();
+	mfxProjectionMatrix = m_fxShader->GetVariableByName("gProjectionMatrix")->AsMatrix();
 
-	// Create the vertex input layout.
-	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-
-	// Create the input layout
-	D3DX11_PASS_DESC passDesc;
-	mTech->GetPassByIndex(0)->GetDesc(&passDesc);
-	
-	// Create the vertex input layout.
-	result = device->CreateInputLayout(vertexDesc, 2, passDesc.pIAInputSignature,
-		passDesc.IAInputSignatureSize, &m_layout);
+	mfxCameraPosition = m_fxShader->GetVariableByName("gCameraPostion");
 
 
-	if (FAILED(result))
-	{
-		return false;
-	}
+	mfxLightValue = m_fxShader->GetVariableByName("gDirLight");
+
+
 
 
 	return true;
@@ -220,12 +204,41 @@ bool LightFxClass::SetFXParameters(ID3D11DeviceContext* deviceContext, XMMATRIX&
 
 
 	XMMATRIX worldViewProj = worldMatrix * viewMatrix*projectionMatrix;
-
 	
-	result=mfxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&worldViewProj));
+	XMStoreFloat4(&LightValue.Ambient, ambientColor);
+	XMStoreFloat4(&LightValue.Diffuse, diffuseColor);
+	XMStoreFloat4(&LightValue.Specular, specularColor);
+	XMStoreFloat3(&LightValue.LightDirection, lightDirection);
+	LightValue.SpecularPower = specularPower;
+	
+	
+	result = mfxCameraPosition->SetRawValue(&cameraPosition, 0, sizeof(cameraPosition));
+	if (FAILED(result)) {
+		return false;
+	}
 
-	if (FAILED(result))
-	{
+	result=mfxLightValue->SetRawValue(&LightValue, 0, sizeof(LightValue));
+	if (FAILED(result)) {
+		return false;
+	}
+	
+	result = result = mfxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&worldViewProj));
+	if (FAILED(result)) {
+		return false;
+	}
+
+	result = mfxWorldMatrix->SetMatrix(reinterpret_cast<float*>(&worldMatrix));
+	if (FAILED(result)) {
+		return false;
+	}
+
+	result = mfxViewMatrix->SetMatrix(reinterpret_cast<float*>(&viewMatrix));
+	if (FAILED(result)) {
+		return false;
+	}
+
+	result = mfxProjectionMatrix->SetMatrix(reinterpret_cast<float*>(&projectionMatrix));
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -257,81 +270,4 @@ void LightFxClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 }
 
 
-bool LightFxClass::BuildGeometryBuffers(ID3D11Device* device)
-{
-	HRESULT result;
 
-	// Create vertex buffer
-	Vertex vertices[] =
-	{ 
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-		{ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4{ 0.0f, 0.0f, 0.0f, 1.0f } },
-		{ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4{ 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f } },
-		{ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4{ 0.0f, 0.0f, 1.0f, 1.0f } },
-		{ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4{ 1.0f, 1.0f, 0.0f, 1.0f } },
-		{ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4{ 0.0f, 1.0f, 1.0f, 1.0f } },
-		{ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4{ 1.0f, 0.0f, 1.0f, 1.0f } }
-	};
-
-	D3D11_BUFFER_DESC vbd;
-	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(Vertex) * 8;
-	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbd.CPUAccessFlags = 0;
-	vbd.MiscFlags = 0;
-	vbd.StructureByteStride = 0;
-	D3D11_SUBRESOURCE_DATA vinitData;
-	vinitData.pSysMem = vertices;
-	result=device->CreateBuffer(&vbd, &vinitData, &mBoxVB);
-
-	if (FAILED(result)) {
-		return false;
-	}
-
-
-	// Create the index buffer
-
-	UINT indices[] = {
-		// front face
-		0, 1, 2,
-		0, 2, 3,
-
-		// back face
-		4, 6, 5,
-		4, 7, 6,
-
-		// left face
-		4, 5, 1,
-		4, 1, 0,
-
-		// right face
-		3, 2, 6,
-		3, 6, 7,
-
-		// top face
-		1, 5, 6,
-		1, 6, 2,
-
-		// bottom face
-		4, 0, 3,
-		4, 3, 7
-	};
-
-	D3D11_BUFFER_DESC ibd;
-	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = sizeof(UINT) * 36;
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.CPUAccessFlags = 0;
-	ibd.MiscFlags = 0;
-	ibd.StructureByteStride = 0;
-	D3D11_SUBRESOURCE_DATA iinitData;
-	iinitData.pSysMem = indices;
-	result=device->CreateBuffer(&ibd, &iinitData, &mBoxIB);
-
-	if (FAILED(result)) {
-		return false;
-	}
-
-	return true;
-}

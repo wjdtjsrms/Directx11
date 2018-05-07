@@ -29,8 +29,11 @@ private:
 	struct VertexType
 	{
 		XMFLOAT3 position;
-		XMFLOAT2 texture;
 		XMFLOAT3 normal;
+		XMFLOAT2 texture;
+	
+		
+		
 	};
 
 	struct ModelType

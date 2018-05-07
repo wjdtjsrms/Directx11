@@ -16,10 +16,19 @@ class LightFxClass
 
 private:
 
-	struct Vertex
-	{
-		XMFLOAT3 Pos;
-		XMFLOAT4 Color;
+	struct SetFxMatrixValue {
+		XMMATRIX worldMatrix; 
+		XMMATRIX viewMatrix; 
+		XMMATRIX projectionMatrix;
+		XMMATRIX orthoMatrix;
+	};
+
+	struct SetFxLightValue {
+		XMFLOAT4 Ambient;
+		XMFLOAT4 Diffuse;
+		XMFLOAT4 Specular;
+		XMFLOAT3 LightDirection;
+		float SpecularPower;
 	};
 
 
@@ -34,8 +43,11 @@ public:
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, XMMATRIX&, XMMATRIX&, XMMATRIX&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, XMVECTOR&, float, ID3D11ShaderResourceView**);
 
+	SetFxMatrixValue MatrixValue;
+	SetFxLightValue LightValue;
+
 private:
-	bool initializeDesc(ID3D11Device*);
+
 	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*);
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
@@ -49,11 +61,17 @@ private:
 	ID3D11InputLayout* m_layout;
 
 	ID3DX11EffectTechnique* mTech;
-	ID3DX11EffectMatrixVariable* mfxWorldViewProj;
 
-	ID3D11Buffer* mBoxVB;
-	ID3D11Buffer* mBoxIB;
-	XMFLOAT4 Color{ 0.0f, 0.0f, 0.0f, 0.0f };
+	ID3DX11EffectMatrixVariable* mfxWorldViewProj;
+	ID3DX11EffectMatrixVariable* mfxWorldMatrix;
+	ID3DX11EffectMatrixVariable* mfxViewMatrix;
+	ID3DX11EffectMatrixVariable* mfxProjectionMatrix;
+	ID3DX11EffectVariable* mfxCameraPosition;
+
+	ID3DX11EffectVariable* mfxLightValue;
+
+
+
 
 };
 

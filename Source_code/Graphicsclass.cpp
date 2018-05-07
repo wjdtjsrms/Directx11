@@ -33,14 +33,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	XMMATRIX BaseViewMatrix;
 
 
-	// Create the Direct3D object.
+
 	m_D3D = new D3DClass;
 	if(!m_D3D)
 	{
 		return false;
 	}
 
-	// Initialize the Direct3D object.
+
 	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
 	if(!result)
 	{
@@ -48,27 +48,26 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the camera object.
+
 	m_Camera = new CameraClass;
 	if(!m_Camera)
 	{
 		return false;
 	}
 
-	// Set the initial position of the camera.
+	// 카메라 위치 잡기
 	m_Camera->SetPosition(0.0f, 0.0f, -15.0f);
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(BaseViewMatrix);
 	
-	// Create the model object.
 	m_Model = new ModelClass;
 	if(!m_Model)
 	{
 		return false;
 	}
 
-	// Initialize the model object.
-	// 기능 분리
+
+	// 기능 분리 할것
 	result = m_Model->Initialize(m_D3D->GetDevice(), L"Resource/test.obj", L"Resource/model.txt", L"Resource/uv_snap.dds", L"Resource/uv_snap2.dds"); //change file
 	if(!result)
 	{
@@ -82,7 +81,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Initialize the light shader object.
+
 	result = m_LightFx->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
 	{
@@ -91,38 +90,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 
-	// Create the light shader object.
-	//m_LightShader = new LightShaderClass;
-	//if (!m_LightShader)
-	//{
-	//	return false;
-	//}
-
-
-
-	//// Initialize the light shader object.
-	//result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
-	//	return false;
-	//}
-
-
-
-	// Create the light object.
 	m_Light = new LightClass;
 	if (!m_Light)
 	{
 		return false;
 	}
 
-	// Initialize the light object.
+	// light object 값 설정
 	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetDiffuseColor(0.5f, 0.5f, 0.5f, 0.5f);
 	m_Light->SetDirection(-1.0f, 0.0f, 0.0f);
 	m_Light->setSpecularColor(1.0f, 0.0f, 0.0f, 1.0f);
-	m_Light->SetSpecularPower(32.0f);
+	m_Light->SetSpecularPower(16.0f);
 
 	m_Text = new TextClass;
 	if (!m_Light){
@@ -150,14 +129,14 @@ void GraphicsClass::Shutdown()
 
 	}
 
-	// Release the light object.
+
 	if (m_Light)
 	{
 		delete m_Light;
 		m_Light = 0;
 	}
 
-	// Release the light shader object.
+
 	if (m_LightShader)
 	{
 		m_LightShader->Shutdown();
@@ -173,7 +152,6 @@ void GraphicsClass::Shutdown()
 	}
 
 
-	// Release the model object.
 	if(m_Model)
 	{
 		m_Model->Shutdown();
@@ -181,14 +159,13 @@ void GraphicsClass::Shutdown()
 		m_Model = 0;
 	}
 
-	// Release the camera object.
+
 	if(m_Camera)
 	{
 		delete m_Camera;
 		m_Camera = 0;
 	}
 
-	// Release the D3D object.
 	if(m_D3D)
 	{
 		m_D3D->Shutdown();
@@ -224,7 +201,8 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpuPercent, float
 	}
 	
 
-	// Render the graphics scene.
+	// 그래픽 씬 그리기
+	// 굳이 여기서 인자 값을 전달하는게 맞을까?
 	result = Render(mouseX, mouseY);
 	if(!result)
 	{
@@ -242,8 +220,6 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 
 	float SpecularPower;
 	
-//	XMMATRIX Rotation;
-	
 	bool result;
 
 	float rotationX;
@@ -253,73 +229,66 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 	rotationY = (float)XM_PI * (mouseY*0.0008f);
 
 	
-
-	// Clear the buffers to begin the scene.
+	// 버퍼를 비우고 씬을 시작
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
-	// Generate the view matrix based on the camera's position.
+	// View matrix 를 구축하고 카메라의 기본 값을 설정
 	m_Camera->Render();
 
-	// Get the world, view, and projection matrices from the camera and d3d objects.
+	// 쉐이더 구축에 필요한 값을 지역변수에 저장
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
+	CameraPostion = XMLoadFloat3(&m_Camera->GetPosition());
 
+	
 
-
-	// Get the direction, diffuse color
+	// 빛의 방향과 색깔을 지역변수에 저장
 	m_Light->GetDirection(Direction);
 	m_Light->GetDiffuseColor(DiffuseColor);
 	m_Light->GetAmbientColor(AmbeintColor);
 	m_Light->GetSpecularColor(SpecularColor);
 	SpecularPower = m_Light->GetSpecularPower();
 
-	CameraPostion = XMLoadFloat3(&m_Camera->GetPosition());
-	
+
+	// 물체의 회전을 구현
+	// 카메라의 회전으로 교체 예정
 	worldMatrix = worldMatrix*XMMatrixRotationY(-rotationX)*XMMatrixRotationX(-rotationY);
 
+	//모델의 설정 값을 담은 device context 를 가져옴
 	m_Model->Render(m_D3D->GetDeviceContext());
-	// Render the model using the color shader.
 
 
+	// 주어진 값으로 fx파일 컴파일 및 실행
+	HR(result = m_LightFx->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion, SpecularColor, SpecularPower, m_Model->GetTexture()));
 
-	//result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion,SpecularColor,SpecularPower,m_Model->GetTexture());
-	//if(!result)
-	//{
-	//	return false;
-	//}
-
-	result = m_LightFx->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, Direction, DiffuseColor, AmbeintColor, CameraPostion, SpecularColor, SpecularPower, m_Model->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
-
-
+	// 글자도 함께 돌아가지 않게 하기 위해 새로운 worldmatrix 대입
+	// 분리 필수
 	m_D3D->GetWorldMatrix(worldMatrix);
 
-	// Turn off the Z buffer to begin all 2D rendering.
+	// 2d 렌더링을 위한 설정 켜기
 	m_D3D->TurnZBufferOff();
-
-	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();
 
-	// Render the text string of the render count.
-	result=m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
-	if (!result)
-	{
-		return false;
-	}
+	HR(m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix));
 
-	// Turn off alpha blending after rendering the text.
+	// 2d 렌더링을 위한 설정 끄기
 	m_D3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();
 
-	// Present the rendered scene to the screen.
+
+
+	// 씬을 그린다
 	m_D3D->EndScene();
+
+	return true;
+}
+
+bool GraphicsClass::setValue() {
+
+	
+
 
 	return true;
 }

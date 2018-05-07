@@ -45,6 +45,7 @@ public:
 
 private:
 	bool Render(int, int);
+	bool setValue();
 
 private:
 	D3DClass* m_D3D;

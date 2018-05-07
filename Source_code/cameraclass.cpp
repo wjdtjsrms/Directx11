@@ -65,13 +65,13 @@ void CameraClass::Render()
 	XMMATRIX rotationMatrix;
 
 
-	// Setup the vector that points upwards. 상향벡터
+	// 상향벡터
 	up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	// Setup the position of the camera in the world. 카메라 위치
+	//카메라 위치
 	position = XMVectorSet(m_positionX, m_positionY, m_positionZ, 0.0f);
 
-	// Setup where the camera is looking by default. 카메라 방향
+	// 카메라 방향
 	lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
 	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
